@@ -31,10 +31,17 @@ First, ensure you have Rust installed. Clone the repository and run the cargo bu
 cargo build --release
 ```
 
-2. Run the application:
+2. Install the application (Debian/Linux):
+You can safely move the compiled release binary to your system's PATH so you can use it anywhere.
 ```bash
-cargo run
+sudo cp target/release/readeon /usr/local/bin/
 ```
+
+3. Run the application:
+```bash
+readeon
+```
+If you didn't install to your PATH, you can still run it locally with `cargo run`.
 
 On first launch, Readeon will automatically create the required `readeon.db` SQLite database in the current working directory to store your library data.
 
