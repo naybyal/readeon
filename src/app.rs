@@ -11,10 +11,29 @@ pub struct AddBookState {
     pub status_msg: String,
 }
 
+#[derive(Default)]
+pub struct AddSessionState {
+    pub minutes: String,
+    pub pages: String,
+    pub focus: usize, // 0: minutes, 1: pages
+    pub status_msg: String,
+}
+
+#[derive(Default)]
+pub struct AddNoteState {
+    pub page: String,
+    pub quote: String,
+    pub note: String,
+    pub focus: usize, // 0: page, 1: quote, 2: note
+    pub status_msg: String,
+}
+
 pub enum Screen {
     Library,
     BookDetail,
     AddBook,
+    AddSession,
+    AddNote,
     Stats,
 }
 
@@ -26,6 +45,8 @@ pub struct AppState {
     pub current_notes: Vec<Note>,
     pub current_stats: Option<ReadingStats>,
     pub add_book_state: AddBookState,
+    pub add_session_state: AddSessionState,
+    pub add_note_state: AddNoteState,
     pub quit: bool,
 }
 
@@ -39,6 +60,8 @@ impl AppState {
             current_notes: Vec::new(),
             current_stats: None,
             add_book_state: Default::default(),
+            add_session_state: Default::default(),
+            add_note_state: Default::default(),
             quit: false,
         }
     }

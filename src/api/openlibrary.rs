@@ -37,7 +37,11 @@ pub async fn fetch_by_isbn(isbn: &str) -> Result<Option<BookMetadata>, reqwest::
         isbn
     );
 
-    let response = reqwest::get(&url).await?.json::<HashMap<String, OpenLibraryBookData>>().await?;
+    let client = reqwest::Client::builder()
+        .user_agent("Readeon/MVP")
+        .build()?;
+
+    let response = client.get(&url).send().await?.json::<HashMap<String, OpenLibraryBookData>>().await?;
 
     let key = format!("ISBN:{}", isbn);
     if let Some(data) = response.get(&key) {

@@ -59,8 +59,14 @@ pub async fn handle_event(key: KeyEvent, app: &mut AppState, _conn: &Connection)
             app.screen = Screen::Library;
         }
         KeyCode::Char('p') => { /* update progress */ }
-        KeyCode::Char('r') => { /* log session */ }
-        KeyCode::Char('n') => { /* add note */ }
+        KeyCode::Char('r') => {
+            app.screen = Screen::AddSession;
+            app.add_session_state = Default::default();
+        }
+        KeyCode::Char('n') => {
+            app.screen = Screen::AddNote;
+            app.add_note_state = Default::default();
+        }
         KeyCode::Char('d') => { /* delete book */ }
         _ => {}
     }

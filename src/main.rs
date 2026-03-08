@@ -67,6 +67,8 @@ async fn run_app(
                 Screen::Library => ui::library_view::handle_event(key, app, conn).await?,
                 Screen::BookDetail => ui::book_view::handle_event(key, app, conn).await?,
                 Screen::AddBook => ui::add_book_view::handle_event(key, app, conn).await?,
+                Screen::AddSession => ui::add_session_view::handle_event(key, app, conn).await?,
+                Screen::AddNote => ui::add_note_view::handle_event(key, app, conn).await?,
                 Screen::Stats => ui::stats_view::handle_event(key, app, conn).await?,
             }
         }

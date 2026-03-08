@@ -32,10 +32,12 @@ cargo build --release
 ```
 
 2. Install the application (Debian/Linux):
-You can safely move the compiled release binary to your system's PATH so you can use it anywhere.
+You can safely move the compiled release binary to your local user's PATH so you can use it anywhere without needing `sudo`.
 ```bash
-sudo cp target/release/readeon /usr/local/bin/
+mkdir -p ~/.local/bin
+cp target/release/readeon ~/.local/bin/readeon
 ```
+*(After copying, you can run `cargo clean` inside the project folder to free up disk space from build artifacts).*
 
 3. Run the application:
 ```bash
