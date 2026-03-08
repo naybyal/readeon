@@ -1,6 +1,6 @@
 # Readeon
 
-Readeon is a fast, private, offline-first terminal application that I built for tracking books, reading sessions, notes, and reading analytics. 
+Readeon is a private, offline-first terminal application that I built for tracking books, reading sessions, notes, and reading analytics. 
 
 Most book tracking tools require internet connectivity and focus heavily on social features rather than building personal knowledge. My goal with Readeon is to provide a local reading intelligence system. It runs entirely locally in your terminal, stores your data reliably in an embedded SQLite database, and supports fetching book metadata using an ISBN from the Open Library API.
 
