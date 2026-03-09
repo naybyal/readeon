@@ -34,8 +34,9 @@ pub fn draw(f: &mut Frame, app: &AppState) {
         Line::styled(&state.status_msg, Style::default().fg(Color::Yellow)),
     ];
 
+    let title = if state.id.is_some() { "Edit Reading Session" } else { "Add Reading Session" };
     let block = Paragraph::new(text)
-        .block(Block::default().borders(Borders::ALL).title("Add Reading Session"));
+        .block(Block::default().borders(Borders::ALL).title(title));
     
     f.render_widget(block, chunks[0]);
 }
@@ -62,16 +63,42 @@ pub async fn handle_event(key: KeyEvent, app: &mut AppState, conn: &Connection) 
             }
 
             if let Some(book) = app.books.get(app.selected_book_index) {
-                let session = ReadingSession {
-                    id: 0,
-                    book_id: book.id,
-                    date: Local::now().date_naive(),
-                    minutes_read: minutes,
-                    pages_read: pages,
+                let repo = crate::db::session_repo::SessionRepository::new(conn);
+
+                let is_edit = app.add_session_state.id.is_some();
+                let session = if let Some(id) = app.add_session_state.id {
+                    // Try to find existing to preserve date
+                    if let Some(existing) = app.current_sessions.iter().find(|s| s.id == id) {
+                        let mut s = existing.clone();
+                        s.minutes_read = minutes;
+                        s.pages_read = pages;
+                        s
+                    } else {
+                        ReadingSession {
+                            id,
+                            book_id: book.id,
+                            date: Local::now().date_naive(),
+                            minutes_read: minutes,
+                            pages_read: pages,
+                        }
+                    }
+                } else {
+                    ReadingSession {
+                        id: 0,
+                        book_id: book.id,
+                        date: Local::now().date_naive(),
+                        minutes_read: minutes,
+                        pages_read: pages,
+                    }
                 };
 
-                let repo = crate::db::session_repo::SessionRepository::new(conn);
-                if let Err(e) = repo.insert(&session) {
+                let res = if is_edit {
+                    repo.update(&session)
+                } else {
+                    repo.insert(&session).map(|_| ())
+                };
+
+                if let Err(e) = res {
                     app.add_session_state.status_msg = format!("Error: {}", e);
                 } else {
                     app.current_sessions = repo.fetch_by_book(book.id).unwrap_or_default();

@@ -49,4 +49,25 @@ impl<'a> SessionRepository<'a> {
         }
         Ok(sessions)
     }
+
+    pub fn update(&self, session: &ReadingSession) -> Result<()> {
+        self.conn.execute(
+            "UPDATE reading_sessions SET date = ?1, minutes_read = ?2, pages_read = ?3 WHERE id = ?4",
+            params![
+                session.date.format("%Y-%m-%d").to_string(),
+                session.minutes_read,
+                session.pages_read,
+                session.id
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn delete(&self, id: i64) -> Result<()> {
+        self.conn.execute(
+            "DELETE FROM reading_sessions WHERE id = ?1",
+            params![id],
+        )?;
+        Ok(())
+    }
 }

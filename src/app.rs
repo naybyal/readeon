@@ -13,6 +13,7 @@ pub struct AddBookState {
 
 #[derive(Default)]
 pub struct AddSessionState {
+    pub id: Option<i64>,
     pub minutes: String,
     pub pages: String,
     pub focus: usize, // 0: minutes, 1: pages
@@ -21,6 +22,7 @@ pub struct AddSessionState {
 
 #[derive(Default)]
 pub struct AddNoteState {
+    pub id: Option<i64>,
     pub page: String,
     pub quote: String,
     pub note: String,
@@ -47,6 +49,9 @@ pub struct AppState {
     pub add_book_state: AddBookState,
     pub add_session_state: AddSessionState,
     pub add_note_state: AddNoteState,
+    pub book_view_focus: usize, // 0: None, 1: Sessions, 2: Notes
+    pub selected_session_index: usize,
+    pub selected_note_index: usize,
     pub quit: bool,
 }
 
@@ -62,6 +67,9 @@ impl AppState {
             add_book_state: Default::default(),
             add_session_state: Default::default(),
             add_note_state: Default::default(),
+            book_view_focus: 0,
+            selected_session_index: 0,
+            selected_note_index: 0,
             quit: false,
         }
     }

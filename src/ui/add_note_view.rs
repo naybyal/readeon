@@ -38,8 +38,9 @@ pub fn draw(f: &mut Frame, app: &AppState) {
         Line::styled(&state.status_msg, Style::default().fg(Color::Yellow)),
     ];
 
+    let title = if state.id.is_some() { "Edit Note" } else { "Add Note" };
     let block = Paragraph::new(text)
-        .block(Block::default().borders(Borders::ALL).title("Add Note"));
+        .block(Block::default().borders(Borders::ALL).title(title));
     
     f.render_widget(block, chunks[0]);
 }
@@ -67,17 +68,44 @@ pub async fn handle_event(key: KeyEvent, app: &mut AppState, conn: &Connection) 
             }
 
             if let Some(book) = app.books.get(app.selected_book_index) {
-                let new_note = Note {
-                    id: 0,
-                    book_id: book.id,
-                    page,
-                    quote,
-                    note: note.unwrap_or_default(),
-                    created_at: Local::now().naive_local(),
+                let repo = crate::db::note_repo::NoteRepository::new(conn);
+
+                let is_edit = app.add_note_state.id.is_some();
+                let new_note = if let Some(id) = app.add_note_state.id {
+                    if let Some(existing) = app.current_notes.iter().find(|n| n.id == id) {
+                        let mut n = existing.clone();
+                        n.page = page;
+                        n.quote = quote;
+                        n.note = note.unwrap_or_default();
+                        n
+                    } else {
+                        Note {
+                            id,
+                            book_id: book.id,
+                            page,
+                            quote,
+                            note: note.unwrap_or_default(),
+                            created_at: Local::now().naive_local(),
+                        }
+                    }
+                } else {
+                    Note {
+                        id: 0,
+                        book_id: book.id,
+                        page,
+                        quote,
+                        note: note.unwrap_or_default(),
+                        created_at: Local::now().naive_local(),
+                    }
                 };
 
-                let repo = crate::db::note_repo::NoteRepository::new(conn);
-                if let Err(e) = repo.insert(&new_note) {
+                let res = if is_edit {
+                    repo.update(&new_note)
+                } else {
+                    repo.insert(&new_note).map(|_| ())
+                };
+
+                if let Err(e) = res {
                     app.add_note_state.status_msg = format!("Error: {}", e);
                 } else {
                     app.current_notes = repo.fetch_by_book(book.id).unwrap_or_default();

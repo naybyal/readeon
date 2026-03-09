@@ -50,4 +50,25 @@ impl<'a> NoteRepository<'a> {
         }
         Ok(notes)
     }
+
+    pub fn update(&self, note: &Note) -> Result<()> {
+        self.conn.execute(
+            "UPDATE notes SET page = ?1, quote = ?2, note = ?3 WHERE id = ?4",
+            params![
+                note.page,
+                note.quote,
+                note.note,
+                note.id
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn delete(&self, id: i64) -> Result<()> {
+        self.conn.execute(
+            "DELETE FROM notes WHERE id = ?1",
+            params![id],
+        )?;
+        Ok(())
+    }
 }
